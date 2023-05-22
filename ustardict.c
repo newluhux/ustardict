@@ -9,11 +9,12 @@
 // I hate ifdef, If you have a better solution please do let me know
 #ifdef _WIN32
 #include <winsock2.h>
+#include <minwindef.h> // macro min()
 #else
 #include <netinet/in.h>
+#define min(x, y) ((x) < (y) ? (x) : (y))
 #endif
 
-#define min(x, y) ((x) < (y) ? (x) : (y))
 
 struct stardict {
 	FILE *idx;
