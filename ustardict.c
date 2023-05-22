@@ -128,8 +128,8 @@ int main(int argc, char *argv[])
 			fseek(dict.idx, 1, SEEK_CUR);	/* skip '\0' */
 			fread(&offset, 1, sizeof(offset), dict.idx);
 			fread(&size, 1, sizeof(size), dict.idx);
-			offset = htobe32(offset);
-			size = htobe32(size);
+			offset = htonl(offset);
+			size = htonl(size);
 			if (stardict_strcmp(idxbuf, inputbuf) == 0) {
 				printf("%s FOUND\n", inputbuf);
 				fseek(dict.dict, offset, SEEK_SET);
