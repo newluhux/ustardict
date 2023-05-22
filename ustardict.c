@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 {
 	char *prefix;
 	if (argc < 2) {
-		prefix = "./default";
+		prefix = "./default.";
 	} else {
 		prefix = argv[1];
 	}
