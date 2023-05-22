@@ -6,6 +6,13 @@
 #include <ctype.h>
 #include <limits.h>
 
+// I hate ifdef, If you have a better solution please do let me know
+#ifdef _WIN32
+#include <winsock2.h>
+#else
+#include <netinet/in.h>
+#endif
+
 #define min(x, y) ((x) < (y) ? (x) : (y))
 
 struct stardict {
