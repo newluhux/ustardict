@@ -8,13 +8,16 @@
 
 // I hate ifdef, If you have a better solution please do let me know
 #ifdef _WIN32
-#include <winsock2.h>
 #include <minwindef.h> // macro min()
 #else
-#include <netinet/in.h>
 #define min(x, y) ((x) < (y) ? (x) : (y))
 #endif
 
+#if BYTE_ORDER == BIG_ENDIAN
+#define stardict_htonl(x) (x)
+#else
+#define stardict_htonl(x) (__bswap_32(x))
+#endif
 
 struct stardict {
 	FILE *idx;
@@ -129,8 +132,8 @@ int main(int argc, char *argv[])
 			fseek(dict.idx, 1, SEEK_CUR);	/* skip '\0' */
 			fread(&offset, 1, sizeof(offset), dict.idx);
 			fread(&size, 1, sizeof(size), dict.idx);
-			offset = htonl(offset);
-			size = htonl(size);
+			offset = stardict_htonl(offset);
+			size = stardict_htonl(size);
 			if (stardict_strcmp(idxbuf, inputbuf) == 0) {
 				printf("%s FOUND\n", inputbuf);
 				fseek(dict.dict, offset, SEEK_SET);
