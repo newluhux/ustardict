@@ -9,15 +9,13 @@
 // I hate ifdef, If you have a better solution please do let me know
 #ifdef _WIN32
 #include <minwindef.h> // macro min()
+#include <winsock.h>
 #else
 #define min(x, y) ((x) < (y) ? (x) : (y))
+#include <arpa/inet.h>
 #endif
 
-#if BYTE_ORDER == BIG_ENDIAN
-#define stardict_htonl(x) (x)
-#else
-#define stardict_htonl(x) (__bswap_32(x))
-#endif
+#define stardict_ntohl(x) ntohl(x)
 
 struct stardict {
 	FILE *idx;
@@ -33,7 +31,7 @@ struct stardict {
 				 + sizeof(stardict_size))
 #define STARDICT_DICTBUFSIZE BUFSIZ
 
-inline int stardict_strcmp(char *s1, char *s2)
+int stardict_strcmp(char *s1, char *s2)
 {
 	return strcasecmp(s1, s2);
 }
@@ -87,9 +85,9 @@ int stardict_open(char *prefixname, struct stardict *s)
 {
 	char temp[PATH_MAX];
 	snprintf(temp, PATH_MAX, "%sidx", prefixname);
-	s->idx = efopen(temp, "r");
+	s->idx = efopen(temp, "rb");
 	snprintf(temp, PATH_MAX, "%sdict", prefixname);
-	s->dict = efopen(temp, "r");
+	s->dict = efopen(temp, "rb");
 
 	int ret = 0;
 	if (s->idx)
@@ -132,8 +130,8 @@ int main(int argc, char *argv[])
 			fseek(dict.idx, 1, SEEK_CUR);	/* skip '\0' */
 			fread(&offset, 1, sizeof(offset), dict.idx);
 			fread(&size, 1, sizeof(size), dict.idx);
-			offset = stardict_htonl(offset);
-			size = stardict_htonl(size);
+			offset = stardict_ntohl(offset);
+			size = stardict_ntohl(size);
 			if (stardict_strcmp(idxbuf, inputbuf) == 0) {
 				printf("%s FOUND\n", inputbuf);
 				fseek(dict.dict, offset, SEEK_SET);
